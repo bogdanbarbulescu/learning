@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'fourier': { title: 'Explorer Fourier', generator: generateModulePlaceholder },
         'convolution': { title: 'Simulator Convoluție', generator: generateModulePlaceholder },
         'filters': { title: 'Explorer Filtre', generator: generateModulePlaceholder },
-        'circuits': { title: 'Circuite Diode/Tranz.', generator: generateModulePlaceholder },
+        'circuits': { title: 'Circuite Analogice.', generator: generateModulePlaceholder },
         'converter': { title: 'Convertor DC/AC', generator: generateModulePlaceholder },
         'satellite': { title: 'Link Budget Satelit', generator: generateModulePlaceholder },
         'pid': { title: 'Control PID', generator: generateModulePlaceholder },
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'audio-lab': { title: 'Lab Audio', generator: generateModulePlaceholder },
         'sar-compression': { title: 'Explorer Compresie SAR', generator: generateModulePlaceholder },
         'mod-id': { title: 'Identifică Modulația', generator: generateModulePlaceholder },
-        'debug-circuit': { title: 'Debughează Circuitul', generator: generateModulePlaceholder },
+        'debug-circuit': { title: 'Depaneazå Circuitul', generator: generateModulePlaceholder },
         'opt-filter': { title: 'Optimizează Filtrul', generator: generateModulePlaceholder },
         'tune-pid': { title: 'Acordează PID', generator: generateModulePlaceholder },
     };
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Example: Show some summary cards or welcome message
         return `
              <div class="animate__animated animate__fadeIn">
-                <h1 class="h2 mb-4">Bine ai venit la IngiLearn!</h1>
+                <h1 class="h2 mb-4">Bine ai venit la LearnX!</h1>
                 <p class="lead mb-5">Platforma ta interactivă pentru concepte de inginerie. Selectează un modul din meniul lateral pentru a începe.</p>
 
                  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
