@@ -1,187 +1,403 @@
-/* Stiluri Generale și Variabile Teme */
+/* style.css */
+
 :root {
-    --bg-color: #f8f9fa; /* Light mode background */
-    --text-color: #212529; /* Light mode text */
+    /* Light Theme */
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
     --card-bg: #ffffff;
-    --card-border: rgba(0, 0, 0, 0.125);
-    --nav-bg: #e9ecef; /* Slightly darker light nav */
-    --nav-text: #343a40;
-    --nav-hover-bg: #d1d5db;
+    --card-border: #dee2e6;
+    --nav-bg: #ffffff; /* Sidebar background */
+    --nav-text: #495057;
+    --nav-hover-bg: #e9ecef;
+    --nav-active-bg: #dde2e6;
+    --nav-active-text: #0d6efd; /* Primary color for active text */
     --primary-color: #0d6efd;
+    --bs-primary: #0d6efd; /* Ensure Bootstrap primary matches */
+    --bs-primary-rgb: 13, 110, 253;
+    --secondary-color: #6c757d;
     --border-color: #dee2e6;
+    --link-color: #0d6efd;
+    --link-hover-color: #0a58ca;
+    --shadow-sm: 0 .125rem .25rem rgba(0, 0, 0, .075);
+    --shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
 
     --sidenav-width: 260px;
+    --font-family-sans-serif: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 [data-theme="dark"] {
-    --bg-color: #212529; /* Dark mode background */
-    --text-color: #f8f9fa; /* Dark mode text */
-    --card-bg: #343a40;
-    --card-border: rgba(255, 255, 255, 0.125);
-    --nav-bg: #343a40; /* Dark nav */
+    /* Dark Theme */
+    --bg-color: #1a1a1a; /* Slightly lighter dark */
+    --text-color: #e9ecef;
+    --card-bg: #2c2c2c; /* Darker card */
+    --card-border: #444;
+    --nav-bg: #212529; /* Standard dark sidebar */
     --nav-text: #adb5bd;
-    --nav-hover-bg: #495057;
-    --primary-color: #0d6efd; /* Keep primary or adjust if needed */
-    --border-color: #495057;
+    --nav-hover-bg: #343a40;
+    --nav-active-bg: #495057;
+    --nav-active-text: #6ea8fe; /* Lighter blue for dark mode active */
+    --primary-color: #0d6efd; /* Keep primary consistent or adjust */
+    --bs-primary: #0d6efd;
+    --bs-primary-rgb: 13, 110, 253;
+    --secondary-color: #adb5bd;
+    --border-color: #444;
+    --link-color: #6ea8fe; /* Lighter links for dark */
+    --link-hover-color: #8ec0ff;
+    --shadow-sm: 0 .125rem .25rem rgba(255, 255, 255, .05);
+    --shadow: 0 .5rem 1rem rgba(255, 255, 255, .1);
+
+    /* Dark mode specific Bootstrap overrides */
+    --bs-body-color: var(--text-color);
+    --bs-body-bg: var(--bg-color);
+    --bs-secondary-bg: var(--nav-bg);
+    --bs-tertiary-bg: var(--card-bg);
+    --bs-border-color: var(--border-color);
+    --bs-link-color: var(--link-color);
+    --bs-link-hover-color: var(--link-hover-color);
+    --bs-emphasis-color: var(--text-color);
+    --bs-secondary-color: rgba(233, 236, 239, 0.75); /* Lighter secondary text */
+    --bs-light-bg-subtle: var(--card-bg); /* For alerts, etc. */
+    --bs-dark-bg-subtle: var(--nav-hover-bg);
+    --bs-heading-color: var(--text-color);
+    --bs-form-control-bg: var(--card-bg);
+    --bs-form-control-color: var(--text-color);
+    --bs-form-control-border-color: var(--border-color);
+    --bs-input-group-addon-bg: var(--nav-bg);
+    --bs-input-group-addon-color: var(--nav-text);
+    --bs-list-group-bg: var(--card-bg);
+    --bs-list-group-border-color: var(--border-color);
+    --bs-list-group-color: var(--text-color);
+    --bs-list-group-action-hover-bg: var(--nav-hover-bg);
+     --bs-breadcrumb-item-active-color: var(--secondary-color);
+     --bs-breadcrumb-divider-color: var(--secondary-color);
 }
+
 
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: var(--font-family-sans-serif);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* Wrapper pentru Sidenav și Content */
-#wrapper {
-    display: flex;
-    min-height: 100vh;
+h1, h2, h3, h4, h5, h6 {
+    color: var(--bs-heading-color);
 }
 
-/* Sidenav */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a:hover {
+  color: var(--link-hover-color);
+  text-decoration: none; /* Often preferred in modern UIs */
+}
+
+/* Wrapper and Layout */
+#wrapper {
+    display: flex;
+    flex: 1; /* Make wrapper take remaining height */
+}
+
+#page-content-wrapper {
+    flex: 1;
+    min-width: 0; /* Important for flex item wrapping */
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease; /* Match sidenav transition */
+}
+#main-content {
+    flex: 1; /* Make main content area fill space */
+     transition: opacity 0.3s ease-in-out; /* Fade transition for content loading */
+}
+.content-loading {
+    opacity: 0.5;
+    pointer-events: none; /* Prevent interaction while loading */
+}
+
+/* Sidebar */
 #sidenav {
     width: var(--sidenav-width);
-    min-height: 100vh;
     background-color: var(--nav-bg);
-    color: var(--nav-text);
+    border-right: 1px solid var(--border-color);
     transition: margin-left 0.3s ease;
-    margin-left: 0; /* Sidenav vizibil by default pe ecrane mari */
+    margin-left: 0; /* Visible by default on large screens */
+    display: flex;
+    flex-direction: column; /* Allow theme toggle to stick to bottom */
+    height: 100vh; /* Full viewport height */
+    position: sticky; /* Keep sidebar visible on scroll */
+    top: 0;
 }
 
 #sidenav .sidebar-heading {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--text-color); /* Use main text color for heading */
-    background-color: var(--card-bg); /* Match card bg */
-    border-bottom: 1px solid var(--border-color) !important;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--bs-heading-color);
+}
+#sidenav .sidebar-heading i {
+     transition: transform 0.3s ease;
+}
+#sidenav:hover .sidebar-heading i {
+     transform: rotate(-15deg);
 }
 
-#sidenav .list-unstyled a,
-#sidenav .list-unstyled .btn-toggle {
+
+#sidenav .sidebar-nav {
+    overflow-y: auto; /* Scroll long nav lists */
+    flex-grow: 1; /* Allow list to take available space */
+}
+
+#sidenav .nav-link,
+#sidenav .btn-toggle {
     color: var(--nav-text);
+    padding: 0.75rem 1rem; /* Consistent padding */
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 0.375rem; /* Bootstrap standard radius */
     transition: background-color 0.2s ease, color 0.2s ease;
+    width: 100%;
+    text-align: left; /* Ensure button text aligns left */
 }
-
-#sidenav .list-unstyled a:hover,
-#sidenav .list-unstyled .btn-toggle:hover {
+#sidenav .nav-link:hover,
+#sidenav .btn-toggle:hover {
     background-color: var(--nav-hover-bg);
-    color: var(--text-color); /* Text more prominent on hover */
+    color: var(--bs-body-color); /* Use body color for better contrast */
 }
 
-#sidenav .list-unstyled .btn-toggle::before {
+/* Active state styling */
+#sidenav .nav-link.active {
+    background-color: var(--nav-active-bg);
+    color: var(--nav-active-text);
+    font-weight: 600;
+}
+/* Ensure icon color matches active text */
+#sidenav .nav-link.active i {
+    color: var(--nav-active-text);
+}
+
+
+#sidenav .btn-toggle::before {
     width: 1.25em;
     line-height: 0;
-    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba(0,0,0,.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
     transition: transform .35s ease;
     transform-origin: .5em 50%;
-    display: inline-block; /* Needed for alignment */
-    vertical-align: middle; /* Align icon vertically */
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.25rem;
 }
-
-/* Styling for dark theme arrow */
-[data-theme="dark"] #sidenav .list-unstyled .btn-toggle::before {
+[data-theme="dark"] #sidenav .btn-toggle::before {
     content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba(255,255,255,.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
 }
-
-
-#sidenav .list-unstyled .btn-toggle[aria-expanded="true"]::before {
+#sidenav .btn-toggle[aria-expanded="true"]::before {
     transform: rotate(90deg);
 }
 
-#sidenav .btn-toggle-nav a {
-    padding: .1875rem .5rem;
-    margin-top: .125rem;
-    margin-left: 1.25rem;
+/* Sub-links */
+#sidenav .btn-toggle-nav {
+    margin-left: 0.5rem; /* Smaller indent */
 }
-#sidenav .btn-toggle-nav a:hover {
+#sidenav .btn-toggle-nav a.nav-link.sub-link {
+    padding: .4rem 1rem .4rem 2.5rem; /* Indent text further */
+    font-size: 0.9rem;
+    font-weight: 400;
+    position: relative;
+}
+/* Active sub-link */
+#sidenav .btn-toggle-nav a.nav-link.sub-link.active {
+     background-color: var(--nav-active-bg);
+     color: var(--nav-active-text);
+     font-weight: 500;
+}
+
+/* Optional: Add subtle indicator for active sub-link */
+#sidenav .btn-toggle-nav a.nav-link.sub-link.active::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    background-color: var(--nav-active-text);
+    border-radius: 2px;
+}
+
+
+/* Theme Toggle Button */
+#theme-toggle {
+    color: var(--secondary-color);
+    border-color: var(--border-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+#theme-toggle:hover {
      background-color: var(--nav-hover-bg);
+     color: var(--text-color);
+     border-color: var(--border-color); /* Keep border consistent */
 }
 
-
-/* Page Content */
-#page-content-wrapper {
-    flex: 1;
-    min-width: 0; /* Important for flex items */
-    transition: margin-left 0.3s ease; /* Match sidenav transition */
-}
-
-/* Stare Toggled (Sidenav ascuns) */
-#wrapper.toggled #sidenav {
-    margin-left: calc(-1 * var(--sidenav-width));
-}
-
-/* Navbar din Page Content */
+/* Top Navbar */
 #page-content-wrapper .navbar {
-    background-color: var(--card-bg) !important; /* Match card bg */
+    background-color: var(--nav-bg) !important; /* Match sidebar */
     border-bottom: 1px solid var(--border-color) !important;
+    position: sticky; /* Keep navbar visible */
+    top: 0;
+    z-index: 1020; /* Below modals, above content */
 }
-
-#page-content-wrapper .navbar .btn,
 #page-content-wrapper .navbar .navbar-text {
      color: var(--text-color);
 }
+#page-content-wrapper .navbar .btn {
+    color: var(--secondary-color);
+    border: 1px solid transparent;
+}
 #page-content-wrapper .navbar .btn:hover {
     background-color: var(--nav-hover-bg);
+    color: var(--text-color);
+}
+#page-content-wrapper .navbar img.rounded-circle {
+    border: 2px solid var(--border-color);
 }
 
+/* Breadcrumb Styling */
+.breadcrumb {
+    font-size: 0.9rem;
+}
+.breadcrumb-item a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+.breadcrumb-item a:hover {
+    color: var(--link-hover-color);
+}
+.breadcrumb-item.active {
+    color: var(--secondary-color);
+}
 
-/* Card Styling */
+/* Card Styling (for dashboard view) */
 .card {
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
     color: var(--text-color);
+    border-radius: 0.5rem; /* Slightly larger radius */
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden; /* Ensure img corners are rounded */
 }
-
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15) !important;
+    box-shadow: var(--shadow);
 }
-[data-theme="dark"] .card:hover {
-     box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, .08) !important;
+.card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--card-border);
 }
-
-
-.card .placeholder-img {
-    height: 200px; /* Fixed height for consistency */
-    object-fit: cover; /* Crop image nicely */
-    background-color: #ccc; /* Placeholder color */
-}
-
 .card-title {
-    color: var(--primary-color); /* Primary color for titles */
+    color: var(--bs-heading-color); /* Use heading color */
+    font-weight: 600;
 }
-
-.card-body {
-    color: var(--text-color); /* Ensure text color follows theme */
+.card-text {
+    font-size: 0.9rem;
+    color: var(--secondary-color); /* Muted text for description */
 }
-
-.btn-primary {
+.card .btn {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.card .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
-
-/* Iconițe butoane */
-.btn i.fa-fw {
-    width: 1.25em; /* Consistent icon width */
+[data-theme="dark"] .card .btn-primary {
+     /* Optional: Slightly adjust primary button for dark mode */
+}
+.card .btn-success {
+    /* Style challenge buttons */
 }
 
-/* Ajustări fine pentru toggle theme button */
-#theme-toggle {
-    width: 100%;
-    text-align: left;
+/* Module Placeholder Styling */
+.module-placeholder {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    min-height: 400px; /* Ensure some height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.module-placeholder i {
+    font-size: 3rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+.module-placeholder h2 {
+    color: var(--bs-heading-color);
+}
+.module-placeholder p {
+     color: var(--secondary-color);
 }
 
 
-/* Responsive: Pe ecrane mici, sidenav-ul dispare initial */
+/* Footer */
+.footer {
+    background-color: var(--nav-bg); /* Match navbar/sidebar */
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 0; /* Adjust padding */
+}
+.footer .text-muted {
+    color: var(--secondary-color) !important; /* Ensure muted color applies */
+}
+
+
+/* Sidebar Toggled State */
+#wrapper.toggled #sidenav {
+    margin-left: calc(-1 * var(--sidenav-width));
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
     #sidenav {
-        margin-left: calc(-1 * var(--sidenav-width)); /* Ascunde by default */
+        margin-left: calc(-1 * var(--sidenav-width)); /* Hidden by default */
+        position: fixed; /* Make it overlay */
+        z-index: 1030; /* Above navbar */
+        height: 100%;
     }
      #wrapper.toggled #sidenav {
-        margin-left: 0; /* Arată când e toggled */
+        margin-left: 0; /* Show when toggled */
     }
-     #wrapper.toggled #page-content-wrapper {
-        margin-left: 0; /* Contentul nu se mută pe mobil */
+     #page-content-wrapper {
+         /* Content doesn't shift on mobile when sidebar opens */
      }
+
+     /* Consider adding an overlay when sidebar is open on mobile */
+     body.sidebar-toggled::after {
+         content: '';
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.5);
+         z-index: 1025; /* Below sidebar, above content */
+     }
+}
+
+/* Utility Classes */
+.placeholder-img {
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+}
+[data-theme="dark"] .placeholder-img {
+     background-color: #555;
 }
