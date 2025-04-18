@@ -1,0 +1,187 @@
+/* Stiluri Generale și Variabile Teme */
+:root {
+    --bg-color: #f8f9fa; /* Light mode background */
+    --text-color: #212529; /* Light mode text */
+    --card-bg: #ffffff;
+    --card-border: rgba(0, 0, 0, 0.125);
+    --nav-bg: #e9ecef; /* Slightly darker light nav */
+    --nav-text: #343a40;
+    --nav-hover-bg: #d1d5db;
+    --primary-color: #0d6efd;
+    --border-color: #dee2e6;
+
+    --sidenav-width: 260px;
+}
+
+[data-theme="dark"] {
+    --bg-color: #212529; /* Dark mode background */
+    --text-color: #f8f9fa; /* Dark mode text */
+    --card-bg: #343a40;
+    --card-border: rgba(255, 255, 255, 0.125);
+    --nav-bg: #343a40; /* Dark nav */
+    --nav-text: #adb5bd;
+    --nav-hover-bg: #495057;
+    --primary-color: #0d6efd; /* Keep primary or adjust if needed */
+    --border-color: #495057;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Wrapper pentru Sidenav și Content */
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidenav */
+#sidenav {
+    width: var(--sidenav-width);
+    min-height: 100vh;
+    background-color: var(--nav-bg);
+    color: var(--nav-text);
+    transition: margin-left 0.3s ease;
+    margin-left: 0; /* Sidenav vizibil by default pe ecrane mari */
+}
+
+#sidenav .sidebar-heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-color); /* Use main text color for heading */
+    background-color: var(--card-bg); /* Match card bg */
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+#sidenav .list-unstyled a,
+#sidenav .list-unstyled .btn-toggle {
+    color: var(--nav-text);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#sidenav .list-unstyled a:hover,
+#sidenav .list-unstyled .btn-toggle:hover {
+    background-color: var(--nav-hover-bg);
+    color: var(--text-color); /* Text more prominent on hover */
+}
+
+#sidenav .list-unstyled .btn-toggle::before {
+    width: 1.25em;
+    line-height: 0;
+    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+    transition: transform .35s ease;
+    transform-origin: .5em 50%;
+    display: inline-block; /* Needed for alignment */
+    vertical-align: middle; /* Align icon vertically */
+}
+
+/* Styling for dark theme arrow */
+[data-theme="dark"] #sidenav .list-unstyled .btn-toggle::before {
+    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba(255,255,255,.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+}
+
+
+#sidenav .list-unstyled .btn-toggle[aria-expanded="true"]::before {
+    transform: rotate(90deg);
+}
+
+#sidenav .btn-toggle-nav a {
+    padding: .1875rem .5rem;
+    margin-top: .125rem;
+    margin-left: 1.25rem;
+}
+#sidenav .btn-toggle-nav a:hover {
+     background-color: var(--nav-hover-bg);
+}
+
+
+/* Page Content */
+#page-content-wrapper {
+    flex: 1;
+    min-width: 0; /* Important for flex items */
+    transition: margin-left 0.3s ease; /* Match sidenav transition */
+}
+
+/* Stare Toggled (Sidenav ascuns) */
+#wrapper.toggled #sidenav {
+    margin-left: calc(-1 * var(--sidenav-width));
+}
+
+/* Navbar din Page Content */
+#page-content-wrapper .navbar {
+    background-color: var(--card-bg) !important; /* Match card bg */
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+#page-content-wrapper .navbar .btn,
+#page-content-wrapper .navbar .navbar-text {
+     color: var(--text-color);
+}
+#page-content-wrapper .navbar .btn:hover {
+    background-color: var(--nav-hover-bg);
+}
+
+
+/* Card Styling */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15) !important;
+}
+[data-theme="dark"] .card:hover {
+     box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, .08) !important;
+}
+
+
+.card .placeholder-img {
+    height: 200px; /* Fixed height for consistency */
+    object-fit: cover; /* Crop image nicely */
+    background-color: #ccc; /* Placeholder color */
+}
+
+.card-title {
+    color: var(--primary-color); /* Primary color for titles */
+}
+
+.card-body {
+    color: var(--text-color); /* Ensure text color follows theme */
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Iconițe butoane */
+.btn i.fa-fw {
+    width: 1.25em; /* Consistent icon width */
+}
+
+/* Ajustări fine pentru toggle theme button */
+#theme-toggle {
+    width: 100%;
+    text-align: left;
+}
+
+
+/* Responsive: Pe ecrane mici, sidenav-ul dispare initial */
+@media (max-width: 768px) {
+    #sidenav {
+        margin-left: calc(-1 * var(--sidenav-width)); /* Ascunde by default */
+    }
+     #wrapper.toggled #sidenav {
+        margin-left: 0; /* Arată când e toggled */
+    }
+     #wrapper.toggled #page-content-wrapper {
+        margin-left: 0; /* Contentul nu se mută pe mobil */
+     }
+}
