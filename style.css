@@ -132,6 +132,7 @@ a:hover {
     height: 100vh; /* Full viewport height */
     position: sticky; /* Keep sidebar visible on scroll */
     top: 0;
+    z-index: 1030; /* Ensure sidebar is above potential overlays */
 }
 
 #sidenav .sidebar-heading {
@@ -149,6 +150,7 @@ a:hover {
 #sidenav .sidebar-nav {
     overflow-y: auto; /* Scroll long nav lists */
     flex-grow: 1; /* Allow list to take available space */
+    padding-bottom: 1rem; /* Add some padding at the bottom */
 }
 
 #sidenav .nav-link,
@@ -161,6 +163,8 @@ a:hover {
     transition: background-color 0.2s ease, color 0.2s ease;
     width: 100%;
     text-align: left; /* Ensure button text aligns left */
+    border: none; /* Ensure buttons look like links */
+    background: none; /* Ensure buttons look like links */
 }
 #sidenav .nav-link:hover,
 #sidenav .btn-toggle:hover {
@@ -192,6 +196,10 @@ a:hover {
 }
 [data-theme="dark"] #sidenav .btn-toggle::before {
     content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba(255,255,255,.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+}
+#sidenav .btn-toggle[aria-expanded="true"] { /* Style based on aria-expanded */
+    /* Optional: Change background/color when expanded */
+    /* background-color: var(--nav-hover-bg); */
 }
 #sidenav .btn-toggle[aria-expanded="true"]::before {
     transform: rotate(90deg);
@@ -232,12 +240,12 @@ a:hover {
 #theme-toggle {
     color: var(--secondary-color);
     border-color: var(--border-color);
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 #theme-toggle:hover {
      background-color: var(--nav-hover-bg);
      color: var(--text-color);
-     border-color: var(--border-color); /* Keep border consistent */
+     border-color: var(--nav-text); /* Slightly darker border on hover */
 }
 
 /* Top Navbar */
@@ -246,18 +254,20 @@ a:hover {
     border-bottom: 1px solid var(--border-color) !important;
     position: sticky; /* Keep navbar visible */
     top: 0;
-    z-index: 1020; /* Below modals, above content */
+    z-index: 1020; /* Below sidebar, above content */
 }
 #page-content-wrapper .navbar .navbar-text {
      color: var(--text-color);
 }
 #page-content-wrapper .navbar .btn {
     color: var(--secondary-color);
-    border: 1px solid transparent;
+    border: 1px solid transparent; /* Start transparent */
+     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 #page-content-wrapper .navbar .btn:hover {
     background-color: var(--nav-hover-bg);
     color: var(--text-color);
+    border-color: var(--border-color); /* Show border on hover */
 }
 #page-content-wrapper .navbar img.rounded-circle {
     border: 2px solid var(--border-color);
@@ -266,6 +276,7 @@ a:hover {
 /* Breadcrumb Styling */
 .breadcrumb {
     font-size: 0.9rem;
+    margin-bottom: 0; /* Remove default margin */
 }
 .breadcrumb-item a {
     color: var(--link-color);
@@ -277,6 +288,11 @@ a:hover {
 .breadcrumb-item.active {
     color: var(--secondary-color);
 }
+/* Ensure breadcrumb divider color respects theme */
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--bs-breadcrumb-divider-color);
+}
+
 
 /* Card Styling (for dashboard view) */
 .card {
@@ -313,11 +329,28 @@ a:hover {
     border-color: var(--primary-color);
 }
 [data-theme="dark"] .card .btn-primary {
-     /* Optional: Slightly adjust primary button for dark mode */
+     /* Optional: Slightly adjust primary button for dark mode if needed */
+     /* e.g., color: #fff; */
 }
-.card .btn-success {
-    /* Style challenge buttons */
+.card .btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
+.card .btn-outline-primary:hover {
+    color: #fff; /* Standard Bootstrap hover */
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+[data-theme="dark"] .card .btn-outline-primary {
+    color: var(--link-color); /* Use lighter link color */
+    border-color: var(--link-color);
+}
+[data-theme="dark"] .card .btn-outline-primary:hover {
+    color: var(--bs-body-bg); /* Dark background text */
+    background-color: var(--link-color);
+    border-color: var(--link-color);
+}
+
 
 /* Module Placeholder Styling */
 .module-placeholder {
@@ -332,12 +365,12 @@ a:hover {
     justify-content: center;
     text-align: center;
 }
-.module-placeholder i {
+.module-placeholder i.fas { /* Be more specific */
     font-size: 3rem;
     color: var(--secondary-color);
     margin-bottom: 1rem;
 }
-.module-placeholder h2 {
+.module-placeholder h1.h3 { /* Be more specific */
     color: var(--bs-heading-color);
 }
 .module-placeholder p {
@@ -350,9 +383,11 @@ a:hover {
     background-color: var(--nav-bg); /* Match navbar/sidebar */
     border-top: 1px solid var(--border-color);
     padding: 1rem 0; /* Adjust padding */
+    color: var(--text-color); /* Set base text color */
 }
 .footer .text-muted {
-    color: var(--secondary-color) !important; /* Ensure muted color applies */
+    /* Use the Bootstrap variable which is correctly overridden in dark theme */
+    color: var(--bs-secondary-color) !important;
 }
 
 
@@ -366,7 +401,7 @@ a:hover {
     #sidenav {
         margin-left: calc(-1 * var(--sidenav-width)); /* Hidden by default */
         position: fixed; /* Make it overlay */
-        z-index: 1030; /* Above navbar */
+        /* z-index already set to 1030 */
         height: 100%;
     }
      #wrapper.toggled #sidenav {
@@ -376,7 +411,7 @@ a:hover {
          /* Content doesn't shift on mobile when sidebar opens */
      }
 
-     /* Consider adding an overlay when sidebar is open on mobile */
+     /* Overlay for when sidebar is open on mobile */
      body.sidebar-toggled::after {
          content: '';
          position: fixed;
@@ -385,8 +420,23 @@ a:hover {
          width: 100%;
          height: 100%;
          background-color: rgba(0, 0, 0, 0.5);
-         z-index: 1025; /* Below sidebar, above content */
+         z-index: 1029; /* Below sidebar (1030), above navbar (1020) and content */
+         /* Add a fade-in maybe? */
+         /* transition: opacity 0.3s ease; */
+         /* opacity: 1; */
      }
+     /* body:not(.sidebar-toggled)::after {
+         opacity: 0;
+         pointer-events: none;
+     } */
+
+     /* Hide search bar and welcome text on smaller screens if needed */
+     .navbar .d-none.d-lg-flex { /* Search bar */
+        /* display: none !important; */ /* Already handled by d-none d-lg-flex */
+     }
+      .navbar .d-none.d-sm-inline { /* Welcome text */
+         /* display: none !important; */ /* Already handled */
+      }
 }
 
 /* Utility Classes */
@@ -400,4 +450,21 @@ a:hover {
 }
 [data-theme="dark"] .placeholder-img {
      background-color: #555;
+}
+
+/* Animation class (ensure animate.css is loaded if you use these) */
+/* Example: fade in */
+.animate__animated.animate__fadeIn {
+  animation-duration: 0.5s; /* Adjust duration */
+}
+
+/* Add focus styles for accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.25);
+}
+#sidenav .nav-link:focus-visible, #sidenav .btn-toggle:focus-visible {
+     outline: none; /* Remove default outline */
+     box-shadow: 0 0 0 2px var(--nav-bg), 0 0 0 4px var(--nav-active-text); /* Custom inset shadow */
 }

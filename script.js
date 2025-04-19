@@ -1,52 +1,91 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Constants ---
+    const SIDEBAR_BREAKPOINT = 768; // Pixels for mobile sidebar behavior
+    const THEME_DARK = 'dark';
+    const THEME_LIGHT = 'light';
+    const DEFAULT_MODULE = 'dashboard'; // Fallback module
+
+    // --- Element Selectors ---
+    // Use optional chaining (?.) for elements that might not be critical if missing
     const wrapper = document.getElementById('wrapper');
     const menuToggle = document.getElementById('menu-toggle');
     const themeToggle = document.getElementById('theme-toggle');
     const themeToggleText = document.getElementById('theme-toggle-text');
-    const themeToggleIcon = themeToggle.querySelector('i');
+    const themeToggleIcon = themeToggle?.querySelector('i');
     const mainContent = document.getElementById('main-content');
     const sidebarNavLinks = document.querySelectorAll('#sidenav .nav-link');
     const breadcrumbModule = document.getElementById('breadcrumb-module');
+    const sidebarElement = document.getElementById('sidenav'); // Needed for click outside logic
 
     // --- Theme Handling ---
+
+    /**
+     * Applies the specified theme (light or dark) to the document.
+     * @param {string} theme - The theme to apply ('light' or 'dark').
+     */
     const applyTheme = (theme) => {
-        if (theme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            themeToggleIcon.classList.replace('fa-sun', 'fa-moon');
-            themeToggleText.textContent = 'Mod Luminos';
+        console.log("Applying theme:", theme); // Debug log
+        const isDarkMode = theme === THEME_DARK;
+
+        // Toggle the attribute on the root <html> element
+        // setAttribute/removeAttribute is slightly more explicit than toggleAttribute
+        if (isDarkMode) {
+            document.documentElement.setAttribute('data-theme', THEME_DARK);
         } else {
             document.documentElement.removeAttribute('data-theme');
-            themeToggleIcon.classList.replace('fa-moon', 'fa-sun');
-            themeToggleText.textContent = 'Mod Întunecat';
         }
+        console.log("<html> data-theme attribute:", document.documentElement.getAttribute('data-theme')); // Debug log
+
+        // Update toggle button appearance
+        if (themeToggleIcon) {
+             themeToggleIcon.classList.toggle('fa-sun', !isDarkMode);
+             themeToggleIcon.classList.toggle('fa-moon', isDarkMode);
+        }
+         if (themeToggleText) {
+            themeToggleText.textContent = isDarkMode ? 'Mod Luminos' : 'Mod Întunecat';
+         }
     };
 
-    const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    applyTheme(currentTheme);
+    // Determine and apply initial theme on page load
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Priority: Saved theme > System preference > Default (Light)
+    const initialTheme = savedTheme || (prefersDark ? THEME_DARK : THEME_LIGHT);
+    console.log("Initial check - Saved:", savedTheme, "PrefersDark:", prefersDark, "InitialTheme:", initialTheme); // Debug log
+    applyTheme(initialTheme); // Apply the determined theme
 
-    themeToggle.addEventListener('click', () => {
-        let newTheme = document.documentElement.hasAttribute('data-theme') ? 'light' : 'dark';
-        localStorage.setItem('theme', newTheme);
-        applyTheme(newTheme);
+    // Theme toggle button listener
+    themeToggle?.addEventListener('click', () => {
+        console.log("Theme toggle clicked!"); // Debug log
+        // Check the current theme based *directly* on the attribute for reliability
+        const currentTheme = document.documentElement.hasAttribute('data-theme') ? THEME_DARK : THEME_LIGHT;
+        const newTheme = currentTheme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
+        console.log(`Switching from ${currentTheme} to ${newTheme}`); // Debug log
+
+        localStorage.setItem('theme', newTheme); // Save preference
+        applyTheme(newTheme); // Apply the new theme
     });
 
     // --- Sidebar Toggle ---
-    menuToggle.addEventListener('click', () => {
-        wrapper.classList.toggle('toggled');
-        // Add overlay class to body only on mobile when toggled
-        if (window.innerWidth <= 768) {
-             document.body.classList.toggle('sidebar-toggled', wrapper.classList.contains('toggled'));
+    menuToggle?.addEventListener('click', () => {
+        wrapper?.classList.toggle('toggled');
+        // Add/remove body class for overlay only on mobile when sidebar is open
+        if (window.innerWidth <= SIDEBAR_BREAKPOINT) {
+             document.body.classList.toggle('sidebar-toggled', wrapper?.classList.contains('toggled'));
         }
     });
 
-    // Close sidebar if clicking outside on mobile
+    // Close sidebar if clicking outside of it on mobile
     document.addEventListener('click', (event) => {
-        if (window.innerWidth <= 768 && wrapper.classList.contains('toggled')) {
-            const sidebar = document.getElementById('sidenav');
-            // Check if the click is outside the sidebar and not on the toggle button
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+        // Check if on mobile, sidebar is toggled open, and the click target is valid
+        if (window.innerWidth <= SIDEBAR_BREAKPOINT && wrapper?.classList.contains('toggled')) {
+            // Ensure sidebarElement and menuToggle exist before checking contains
+            const isClickInsideSidebar = sidebarElement?.contains(event.target);
+            const isClickOnMenuToggle = menuToggle?.contains(event.target);
+
+            if (!isClickInsideSidebar && !isClickOnMenuToggle) {
                 wrapper.classList.remove('toggled');
-                 document.body.classList.remove('sidebar-toggled');
+                document.body.classList.remove('sidebar-toggled');
             }
         }
     });
@@ -54,13 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dynamic Content Loading (SPA Simulation) ---
 
-    // Mapping module IDs (from data-module attribute) to content/titles
+    // Mapping module IDs to their titles and content generator functions
     const moduleContent = {
         'dashboard': { title: 'Dashboard', generator: generateDashboardContent },
         'fourier': { title: 'Explorer Fourier', generator: generateModulePlaceholder },
         'convolution': { title: 'Simulator Convoluție', generator: generateModulePlaceholder },
         'filters': { title: 'Explorer Filtre', generator: generateModulePlaceholder },
-        'circuits': { title: 'Circuite Analogice.', generator: generateModulePlaceholder },
+        'circuits': { title: 'Circuite Analogice', generator: generateModulePlaceholder },
         'converter': { title: 'Convertor DC/AC', generator: generateModulePlaceholder },
         'satellite': { title: 'Link Budget Satelit', generator: generateModulePlaceholder },
         'pid': { title: 'Control PID', generator: generateModulePlaceholder },
@@ -68,21 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
         'audio-lab': { title: 'Lab Audio', generator: generateModulePlaceholder },
         'sar-compression': { title: 'Explorer Compresie SAR', generator: generateModulePlaceholder },
         'mod-id': { title: 'Identifică Modulația', generator: generateModulePlaceholder },
-        'debug-circuit': { title: 'Depaneazå Circuitul', generator: generateModulePlaceholder },
+        'debug-circuit': { title: 'Depanează Circuitul', generator: generateModulePlaceholder },
         'opt-filter': { title: 'Optimizează Filtrul', generator: generateModulePlaceholder },
         'tune-pid': { title: 'Acordează PID', generator: generateModulePlaceholder },
     };
 
+    // Centralized icon mapping for modules
+    const moduleIcons = {
+        'dashboard': 'fa-tachometer-alt', 'fourier': 'fa-chart-line', 'convolution': 'fa-asterisk',
+        'filters': 'fa-filter', 'circuits': 'fa-microchip', 'converter': 'fa-bolt',
+        'satellite': 'fa-satellite-dish', 'pid': 'fa-sliders-h', 'image-filters': 'fa-image',
+        'audio-lab': 'fa-volume-up', 'sar-compression': 'fa-radar', 'mod-id': 'fa-signal',
+        'debug-circuit': 'fa-wrench', 'opt-filter': 'fa-tasks', 'tune-pid': 'fa-tachometer-alt',
+        'default': 'fa-question-circle' // Fallback icon
+    };
+
+    /**
+     * Generates placeholder HTML content for a module.
+     * @param {string} moduleId - The ID of the module.
+     * @param {string} title - The display title of the module.
+     * @returns {string} HTML string for the placeholder content.
+     */
     function generateModulePlaceholder(moduleId, title) {
-         // In a real app, you'd fetch data or load complex UI components here
-        const iconMap = { // Basic icon mapping
-            'fourier': 'fa-chart-line', 'convolution': 'fa-asterisk', 'filters': 'fa-filter',
-            'circuits': 'fa-microchip', 'converter': 'fa-bolt', 'satellite': 'fa-satellite-dish', 'pid': 'fa-sliders-h',
-            'image-filters': 'fa-image', 'audio-lab': 'fa-volume-up', 'sar-compression': 'fa-radar',
-            'mod-id': 'fa-signal', 'debug-circuit': 'fa-wrench', 'opt-filter': 'fa-tasks', 'tune-pid': 'fa-tachometer-alt',
-            'dashboard': 'fa-tachometer-alt'
-        };
-        const icon = iconMap[moduleId] || 'fa-question-circle';
+        const icon = moduleIcons[moduleId] || moduleIcons['default'];
         return `
             <div class="module-placeholder text-center animate__animated animate__fadeIn">
                  <i class="fas ${icon} fa-3x text-muted mb-4"></i>
@@ -96,8 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
+    /**
+     * Generates the specific HTML content for the dashboard.
+     * @param {string} moduleId - The ID of the module ('dashboard').
+     * @param {string} title - The display title ('Dashboard').
+     * @returns {string} HTML string for the dashboard content.
+     */
      function generateDashboardContent(moduleId, title) {
-        // Example: Show some summary cards or welcome message
         return `
              <div class="animate__animated animate__fadeIn">
                 <h1 class="h2 mb-4">Bine ai venit la LearnX!</h1>
@@ -139,108 +191,157 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
      }
 
-
+    /**
+     * Loads content into the main area based on the module ID.
+     * @param {string} moduleId - The ID of the module to load.
+     */
     const loadContent = (moduleId) => {
-        console.log(`Loading module: ${moduleId}`);
-        if (!mainContent) return; // Exit if main content area doesn't exist
+        console.log(`Attempting to load module: ${moduleId}`); // Debug log
+        if (!mainContent) {
+            console.error("Critical Error: Main content area (#main-content) not found!");
+            return;
+        }
 
-        mainContent.classList.add('content-loading'); // Dim content while loading
-
+        mainContent.classList.add('content-loading'); // Visual feedback: Dim content
         const moduleData = moduleContent[moduleId];
 
-        // Simulate loading time
+        // Simulate network delay/processing time (adjust or remove for production)
         setTimeout(() => {
-            if (moduleData && typeof moduleData.generator === 'function') {
-                mainContent.innerHTML = moduleData.generator(moduleId, moduleData.title);
-                document.title = `${moduleData.title} - IngiLearn`; // Update page title
-                updateActiveLink(moduleId);
-                updateBreadcrumb(moduleData.title);
-            } else {
-                mainContent.innerHTML = `
+            try {
+                if (moduleData && typeof moduleData.generator === 'function') {
+                    console.log(`Generating content for: ${moduleData.title}`); // Debug log
+                    mainContent.innerHTML = moduleData.generator(moduleId, moduleData.title);
+                    document.title = `${moduleData.title} - LearnX`; // Update page title
+                    updateActiveLink(moduleId);
+                    updateBreadcrumb(moduleData.title);
+                } else {
+                    console.error(`Module data or generator function missing for module ID: ${moduleId}`);
+                    mainContent.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Eroare:</strong> Modulul solicitat ("${moduleId}") nu a fost găsit sau configurat corect.
+                        </div>`;
+                    document.title = "Eroare - LearnX";
+                    updateActiveLink(null); // Clear active link state
+                    updateBreadcrumb("Eroare");
+                }
+            } catch (error) {
+                 console.error(`Error generating content for module ${moduleId}:`, error);
+                 mainContent.innerHTML = `
                     <div class="alert alert-danger" role="alert">
-                        <strong>Eroare:</strong> Modulul "${moduleId}" nu a fost găsit sau nu a putut fi încărcat.
+                        <strong>Eroare la generarea conținutului:</strong> A apărut o problemă neașteptată. (${error.message})
                     </div>`;
-                document.title = "Eroare - IngiLearn";
-                updateActiveLink(null); // Remove active state if module not found
-                updateBreadcrumb("Eroare");
+                 document.title = "Eroare - LearnX";
+                 updateActiveLink(null);
+                 updateBreadcrumb("Eroare");
+            } finally {
+                mainContent.classList.remove('content-loading'); // Restore content visibility
+                // Scroll to the top of the main content area after loading new content
+                mainContent.scrollTop = 0; // For scrollable main content divs
+                window.scrollTo(0, 0); // For the whole window
+                console.log(`Finished loading module: ${moduleId}`); // Debug log
             }
-            mainContent.classList.remove('content-loading'); // Restore opacity
-             // Scroll to top of content area after loading
-             mainContent.scrollTop = 0;
-        }, 200); // 200ms simulated delay
-
+        }, 150); // Reduced simulated delay
     };
 
+    /**
+     * Updates the visual state (active class) of sidebar navigation links.
+     * @param {string|null} moduleId - The ID of the currently active module, or null to deactivate all.
+     */
     const updateActiveLink = (moduleId) => {
         sidebarNavLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.dataset.module === moduleId) {
-                link.classList.add('active');
+            const linkModule = link.dataset.module;
+            const isActive = linkModule === moduleId;
+            link.classList.toggle('active', isActive);
 
-                 // Expand parent collapse if it's a sub-link
+            // If activating a link within a collapsed section, expand the parent
+            if (isActive) {
                 const parentCollapse = link.closest('.collapse');
-                if(parentCollapse && !parentCollapse.classList.contains('show')) {
-                    const collapseTrigger = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
-                     if(collapseTrigger && collapseTrigger.classList.contains('collapsed')) {
-                        // Use Bootstrap's JS API to ensure proper handling
-                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(parentCollapse);
+                if (parentCollapse && !parentCollapse.classList.contains('show')) {
+                    // Use Bootstrap's JS API for proper animation and state handling
+                    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(parentCollapse);
+                    if (bsCollapse) {
                         bsCollapse.show();
-                        // Note: Bootstrap handles the aria-expanded and collapsed class on the trigger automatically
+                    } else {
+                        console.warn(`Bootstrap Collapse instance not found for #${parentCollapse.id}. Cannot expand.`);
                     }
                 }
             }
         });
     };
 
+    /**
+     * Updates the text of the breadcrumb element.
+     * @param {string} moduleTitle - The title to display in the breadcrumb.
+     */
      const updateBreadcrumb = (moduleTitle) => {
         if (breadcrumbModule) {
             breadcrumbModule.textContent = moduleTitle;
+        } else {
+            console.warn("Breadcrumb module element (#breadcrumb-module) not found.");
         }
     };
 
 
-    // Handle initial page load and hash changes
+    // --- Routing ---
+
+    /**
+     * Handles changes in the URL hash, loading the corresponding module.
+     */
     const handleRouteChange = () => {
-        let hash = window.location.hash.substring(1); // Remove '#'
-        if (!hash || !moduleContent[hash]) {
-            hash = 'dashboard'; // Default to dashboard
-            window.location.hash = '#dashboard'; // Update URL silently if needed
+        // Get hash, remove '#', provide default if empty
+        const hash = window.location.hash.substring(1) || DEFAULT_MODULE;
+        console.log(`Route change detected. Hash: #${hash}`); // Debug log
+
+        // Check if the requested module exists in our configuration
+        if (!moduleContent[hash]) {
+            console.warn(`Invalid module in hash: #${hash}. Redirecting to default: #${DEFAULT_MODULE}.`);
+            // Use replaceState to change URL without adding to history, preventing broken back button
+            history.replaceState(null, '', `#${DEFAULT_MODULE}`);
+            loadContent(DEFAULT_MODULE);
+        } else {
+            // Load the valid module content
+            loadContent(hash);
         }
-        loadContent(hash);
     };
 
-    // Listen for hash changes
+    // Listen for hash changes (user clicking links, back/forward buttons)
     window.addEventListener('hashchange', handleRouteChange);
 
-    // Initial load
+    // Initial page load: Handle the route based on the current URL hash
+    // Needs to run after all functions are defined.
     handleRouteChange();
 
-     // Make links trigger hash change
+     // --- Event Listeners for Navigation ---
+
+     // Add listeners to sidebar links to handle clicks
      sidebarNavLinks.forEach(link => {
          link.addEventListener('click', (e) => {
-             if (link.href.includes('#')) {
-                 // Let the hashchange event handle loading
-                 // Close sidebar on mobile after click
-                 if (window.innerWidth <= 768 && wrapper.classList.contains('toggled')) {
-                     menuToggle.click(); // Simulate click to close
+             // Only process links that are actual module links (have href starting with # and a data-module)
+             if (link.matches('a[href^="#"]') && link.dataset.module) {
+                 // The actual content loading is handled by the 'hashchange' listener.
+                 // This listener only needs to handle UI side-effects, like closing the mobile menu.
+
+                 // Close sidebar on mobile after clicking a module link
+                 if (window.innerWidth <= SIDEBAR_BREAKPOINT && wrapper?.classList.contains('toggled')) {
+                     menuToggle?.click(); // Simulate a click on the toggle button to close it
                  }
-             } else {
-                 // Handle normal links if any exist (though unlikely here)
              }
+             // No preventDefault() needed, as we want the hash to change naturally.
          });
      });
 
-     // Handle card links on dashboard
-     mainContent.addEventListener('click', (e) => {
-        const cardLink = e.target.closest('a[data-module]');
-        if(cardLink && cardLink.href.includes('#')) {
-            // No need to prevent default, let the hashchange handle it
-            const moduleId = cardLink.dataset.module;
-            if (moduleId) {
-                 // Optional: If you want instant feedback before hashchange fires
-                 // loadContent(moduleId);
-            }
+     // Use event delegation on the main content area to handle clicks on dynamically loaded card links
+     mainContent?.addEventListener('click', (e) => {
+        // Check if the clicked element or its ancestor is a module link within a card
+        const cardLink = e.target.closest('.card a[data-module][href^="#"]');
+        if(cardLink) {
+            // Again, let the browser handle the hash change. The 'hashchange' listener will do the work.
+            // We could potentially close the mobile sidebar here too if a card link was clicked while it was open,
+            // but it's less common scenario than clicking the sidebar links directly.
+            console.log(`Card link clicked for module: ${cardLink.dataset.module}`); // Debug log
         }
      });
 
-});
+    console.log("LearnX script initialized successfully."); // Final initialization log
+
+}); // End DOMContentLoaded
